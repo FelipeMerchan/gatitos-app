@@ -21,7 +21,7 @@ async function loadRandomCats() {
     }
 }
 
-async function loadFavoritesCats() {
+async function loadFavoriteCats() {
     const response = await fetch(API_URL_FAVORITES)
     const data = await response.json()
     console.log('loadFavoritesCats', data)
@@ -31,5 +31,22 @@ async function loadFavoritesCats() {
     }
 }
 
+async function saveFavoriteCat() {
+    const response = await fetch(API_URL_FAVORITES, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            image_id: 'dje',
+        }),
+    })
+    const data = await response.json()
+    console.log('saveFavoriteCat', response)
+    if (response.status !== 200 ) {
+        $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
+    }
+}
+
 loadRandomCats()
-loadFavoritesCats()
+loadFavoriteCats()
