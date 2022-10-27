@@ -1,7 +1,8 @@
 const API_KEY='live_JcUEyGccUMLYJ3Bn3IoCVEl4PBDodEyGSc4lu90HKcA4EYdK4KQuT0EgDZtRW4yq'
 const BASE_URL = 'https://api.thecatapi.com/v1/'
-const API_URL_RANDOM=`${BASE_URL}images/search?limit=2&api_key=${API_KEY}`
-const API_URL_FAVORITES=`${BASE_URL}favourites?api_key=${API_KEY}`
+const API_URL_RANDOM =`${BASE_URL}images/search?limit=2&api_key=${API_KEY}`
+const API_URL_FAVORITES =`${BASE_URL}favourites?api_key=${API_KEY}`
+const getApiUrlFavoritesDelete = (id) => `${BASE_URL}favourites/${id}?api_key=${API_KEY}`
 
 const $spanError = document.getElementById('error')
 
@@ -35,6 +36,12 @@ async function loadFavoriteCats() {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
     } else {
         const $section = document.getElementById('favotireMichis')
+        $section.innerHTML = ''
+        const $h2 = document.createElement('h2')
+        const h2Text = document.createTextNode('Gatitos favoritos')
+        $h2.appendChild(h2Text)
+        $section.appendChild($h2)
+
         data.forEach(cat => {
             const $article = document.createElement('article')
             const $img = document.createElement('img')
@@ -43,6 +50,8 @@ async function loadFavoriteCats() {
             $button.appendChild(btnText)
             $img.src = cat.image.url
             $img.width = 150
+
+            $button.onclick = () => deleteFavoriteCat(cat.id)
 
             $article.appendChild($img)
             $article.appendChild($button)
@@ -66,6 +75,23 @@ async function saveFavoriteCat(id) {
 
     if (response.status !== 200 ) {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
+    } else {
+        loadFavoriteCats()
+        console.log('Gato agregado a los favoritos')
+    }
+}
+
+async function deleteFavoriteCat(id) {
+    const response = await fetch(getApiUrlFavoritesDelete(id), {
+        method: 'DELETE',
+    })
+    const data = await response.json()
+
+    if (response.status !== 200 ) {
+        $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
+    } else {
+        loadFavoriteCats();
+        console.log('Gato eliminado de los favoritos')
     }
 }
 
