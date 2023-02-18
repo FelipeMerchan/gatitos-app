@@ -1,8 +1,8 @@
 const API_KEY='live_JcUEyGccUMLYJ3Bn3IoCVEl4PBDodEyGSc4lu90HKcA4EYdK4KQuT0EgDZtRW4yq'
 const BASE_URL = 'https://api.thecatapi.com/v1/'
-const API_URL_RANDOM =`${BASE_URL}images/search?limit=2&api_key=${API_KEY}`
-const API_URL_FAVORITES =`${BASE_URL}favourites?api_key=${API_KEY}`
-const getApiUrlFavoritesDelete = (id) => `${BASE_URL}favourites/${id}?api_key=${API_KEY}`
+const API_URL_RANDOM =`${BASE_URL}images/search?limit=2`
+const API_URL_FAVORITES =`${BASE_URL}favourites`
+const getApiUrlFavoritesDelete = (id) => `${BASE_URL}favourites/${id}`
 
 const $spanError = document.getElementById('error')
 
@@ -28,7 +28,12 @@ async function loadRandomCats() {
 }
 
 async function loadFavoriteCats() {
-    const response = await fetch(API_URL_FAVORITES)
+    const response = await fetch(API_URL_FAVORITES, {
+        method: 'GET',
+        headers: {
+            'X-API-KEY': API_KEY,
+        }
+    })
     const data = await response.json()
     console.log('loadFavoritesCats', data)
 
@@ -65,6 +70,7 @@ async function saveFavoriteCat(id) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-API-KEY': API_KEY,
         },
         body: JSON.stringify({
             image_id: id,
@@ -84,6 +90,9 @@ async function saveFavoriteCat(id) {
 async function deleteFavoriteCat(id) {
     const response = await fetch(getApiUrlFavoritesDelete(id), {
         method: 'DELETE',
+        headers: {
+            'X-API-KEY': API_KEY,
+        }
     })
     const data = await response.json()
 
