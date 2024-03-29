@@ -1,7 +1,8 @@
-const API_KEY='live_JcUEyGccUMLYJ3Bn3IoCVEl4PBDodEyGSc4lu90HKcA4EYdK4KQuT0EgDZtRW4yq'
+const API_KEY = 'live_JcUEyGccUMLYJ3Bn3IoCVEl4PBDodEyGSc4lu90HKcA4EYdK4KQuT0EgDZtRW4yq'
 const BASE_URL = 'https://api.thecatapi.com/v1/'
-const API_URL_RANDOM =`${BASE_URL}images/search?limit=2`
-const API_URL_FAVORITES =`${BASE_URL}favourites`
+const API_URL_RANDOM = `${BASE_URL}images/search?limit=2`
+const API_URL_FAVORITES = `${BASE_URL}favourites`
+const API_URL_UPLOAD = `${BASE_URL}images/upload`
 const getApiUrlFavoritesDelete = (id) => `${BASE_URL}favourites/${id}`
 
 const $spanError = document.getElementById('error')
@@ -11,7 +12,7 @@ async function loadRandomCats() {
     const data = await response.json()
     console.log('loadRandomCats', data)
 
-    if (response.status !== 200 ) {
+    if (response.status !== 200) {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
     } else {
         const $img1 = document.getElementById('img1')
@@ -37,7 +38,7 @@ async function loadFavoriteCats() {
     const data = await response.json()
     console.log('loadFavoritesCats', data)
 
-    if (response.status !== 200 ) {
+    if (response.status !== 200) {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
     } else {
         const $section = document.getElementById('favotireMichis')
@@ -61,7 +62,7 @@ async function loadFavoriteCats() {
             $article.appendChild($img)
             $article.appendChild($button)
             $section.appendChild($article)
-        }) 
+        })
     }
 }
 
@@ -79,7 +80,7 @@ async function saveFavoriteCat(id) {
     const data = await response.json()
     console.log('saveFavoriteCat', response)
 
-    if (response.status !== 200 ) {
+    if (response.status !== 200) {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
     } else {
         loadFavoriteCats()
@@ -96,11 +97,39 @@ async function deleteFavoriteCat(id) {
     })
     const data = await response.json()
 
-    if (response.status !== 200 ) {
+    if (response.status !== 200) {
         $spanError.innerHTML = `Hubo un error ${response.status} ${data.message}`
     } else {
         loadFavoriteCats();
         console.log('Gato eliminado de los favoritos')
+    }
+}
+
+async function uploadMichiPhoto() {
+    const $form = document.getElementById('uploadingForm')
+    const formData = new FormData($form)
+    console.log(formData.get('file'))
+    const response = await fetch(API_URL_UPLOAD, {
+        method: 'POST',
+        headers: {
+            /* Para enviar la instancia de FormData en el body de la petición
+            debemos especificar que el content type es multipart/form-data, fetch
+            detecta que si le enviamos una instancia de FormData automáticamente va a
+            definir el content type: */
+            //'Content-Type': 'multipart/form-data',
+            'X-API-KEY': API_KEY,
+        },
+        body: formData,
+    })
+
+    const data = await response.json();
+    console.log({ data })
+    if (response.status !== 201) {
+        $spanError.innerHTML = 'Hubo un error: ' + response.status + data.message
+        console.log({ data })
+    } else {
+        console.log('Foto de michi subida')
+        await saveFavoriteCat(data.id)
     }
 }
 
